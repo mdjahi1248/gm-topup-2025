@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GM TOP UP FREE FIRE</title>
+  <style>
+    :root{--green:#27ae60;--dark:#0b5345;--card:#fff;--muted:#666}
+    *{box-sizing:border-box;font-family:Arial, sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#16a085,#1abc9c);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .app{width:100%;max-width:420px}
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(0,0,0,0.15)}
+    h2{margin:0 0 12px;color:var(--dark)}
+    label{display:block;font-weight:600;margin-top:10px}
+    input[type="text"],input[type="email"],input[type="password"],input[type="tel"],select{
+      width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:6px;font-size:15px
+    }
+    input[readonly]{background:#f1f1f1;color:#444;}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--green);color:#fff;width:100%;margin-top:12px}
+    .btn-ghost{background:transparent;border:2px solid var(--green);color:var(--green);width:100%;margin-top:8px}
+    .small{font-size:13px;color:var(--muted);margin-top:8px}
+    .pack{padding:12px;border-radius:10px;margin-top:10px;background:#f7f9f8;border:1px solid #e6f0ec;cursor:pointer;transition:all .15s}
+    .pack.selected{background:var(--green);color:#fff;border-color:rgba(255,255,255,0.1)}
+    .hidden{display:none}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .link{color:var(--green);cursor:pointer;font-weight:600}
+    .note{font-size:13px;color:#444;margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- LOGIN / SIGNUP -->
+    <div class="card" id="authView">
+      <h2 id="authTitle">Sign Up</h2>
+      <div id="signupFields">
+        <label>নাম</label>
+        <input type="text" id="su_name" placeholder="আপনার নাম">
+        <label>ইমেইল</label>
+        <input type="email" id="su_email" placeholder="example@gmail.com">
+        <label>পাসওয়ার্ড</label>
+        <input type="password" id="su_pass" placeholder="Password (min 4 char)">
+        <button class="btn btn-primary" onclick="doSignup()">Sign Up</button>
+      </div>
+      <div id="loginFields" class="hidden">
+        <label>ইমেইল</label>
+        <input type="email" id="li_email" placeholder="example@gmail.com">
+        <label>পাসওয়ার্ড</label>
+        <input type="password" id="li_pass" placeholder="Password">
+        <button class="btn btn-primary" onclick="doLogin()">Login</button>
+        <button class="btn btn-ghost" onclick="showSignup()">Create Account</button>
+      </div>
+      <p class="small">Already have an account? <span class="link" id="toggleAuth">Login</span></p>
+      <p id="authMsg" class="small"></p>
+    </div>
+
+    <!-- PACKS VIEW -->
+    <div class="card hidden" id="packsView">
+      <div class="header">
+        <h2>Diamond Packs</h2>
+        <span class="link" onclick="doLogout()">Logout</span>
+      </div>
+
+      <label>তোমার Game ID</label>
+      <input type="text" id="uid" placeholder="Game ID (e.g. 123456789)">
+
+      <div class="note">Select Recharge</div>
+      <div id="packsList"></div>
+
+      <button class="btn btn-primary" onclick="confirmOrder()">Confirm Order</button>
+    </div>
+
+    <!-- PAYMENT VIEW -->
+    <div class="card hidden" id="paymentView">
+      <h2>আপনি কোন মাধ্যমে পেমেন্ট করবেন?</h2>
+      <button class="btn btn-primary" onclick="showBkash()">Bkash</button>
+      <button class="btn btn-ghost" onclick="showNagad()">Nagad</button>
+      <div id="paymentInfo" class="note"></div>
+
+      <form action="https://formspree.io/f/xwprgkyj" method="POST" id="payForm" class="hidden">
+        <input type="hidden" name="method" id="payMethod">
+        <input type="text" name="trxid" placeholder="Transaction ID" required>
+        <input type="text" name="amount" id="form_amount" placeholder="Amount (BDT)" readonly>
+        <button type="submit" class="btn btn-primary">Submit Payment</button>
+      </form>
+    </div>
+
+  </div>
+
+  <script>
+    const toggleAuth=document.getElementById('toggleAuth');
+    const signupFields=document.getElementById('signupFields');
+    const loginFields=document.getElementById('loginFields');
+    const authView=document.getElementById('authView');
+    const packsView=document.getElementById('packsView');
+    const paymentView=document.getElementById('paymentView');
+    const packsList=document.getElementById('packsList');
+    const authMsg=document.getElementById('authMsg');
+
+    const PACKS=[
+      {label:'25 Diamond TopUp',price:19},{label:'50 Diamond TopUp',price:34},
+      {label:'75 Diamond TopUp',price:51},{label:'100 Diamond TopUp',price:67},
+      {label:'115 Diamond TopUp',price:76},{label:'240 Diamond TopUp',price:151},
+      {label:'505 Diamond TopUp',price:319},{label:'355 Diamond TopUp',price:227},
+      {label:'610 Diamond TopUp',price:381},{label:'850 Diamond TopUp',price:531},
+      {label:'1090 Diamond TopUp',price:681},{label:'1240 Diamond TopUp',price:760},
+      {label:'1850 Diamond TopUp',price:1141},{label:'2530 Diamond TopUp',price:1525},
+      {label:'5060 Diamond TopUp',price:3050},{label:'10120 Diamond TopUp',price:6100},
+      {label:'Weekly Membership',price:152},{label:'Monthly Membership',price:751},
+      {label:'2X Weekly 💳 💳',price:303},{label:'2X Monthly 💳 💳',price:1501},
+      {label:'5X Weekly 💳 💳',price:758},{label:'10X Weekly 💳 💳',price:1515},
+      {label:'1X Weekly + 1X Monthly',price:902},{label:'2X Weekly+2X Monthly',price:1804}
+    ];
+
+    toggleAuth.onclick=()=>{signupFields.classList.toggle('hidden');loginFields.classList.toggle('hidden');
+      toggleAuth.innerText=signupFields.classList.contains('hidden')?'Sign Up':'Login';};
+
+    function doSignup(){
+      const name=document.getElementById('su_name').value.trim();
+      const email=document.getElementById('su_email').value.trim();
+      const pass=document.getElementById('su_pass').value;
+      if(!name||!email||pass.length<4){authMsg.innerText='সব ঘর পূরণ করো।';return;}
+      const users=JSON.parse(localStorage.getItem('users')||'[]');
+      if(users.find(u=>u.email===email)){authMsg.innerText='এই ইমেইলে আগে অ্যাকাউন্ট আছে।';return;}
+      users.push({name,email,pass});localStorage.setItem('users',JSON.stringify(users));
+      authMsg.innerText='রেজিস্ট্রেশন সফল। এখন লগইন করো।';signupFields.classList.add('hidden');loginFields.classList.remove('hidden');
+    }
+
+    function doLogin(){
+      const email=document.getElementById('li_email').value.trim();
+      const pass=document.getElementById('li_pass').value;
+      const users=JSON.parse(localStorage.getItem('users')||'[]');
+      const user=users.find(u=>u.email===email&&u.pass===pass);
+      if(!user){authMsg.innerText='ইমেইল বা পাসওয়ার্ড ভুল।';return;}
+      localStorage.setItem('sessionUser',JSON.stringify(user));
+      openPacks();
+    }
+
+    function doLogout(){localStorage.removeItem('sessionUser');location.reload();}
+
+    function openPacks(){
+      authView.classList.add('hidden');packsView.classList.remove('hidden');
+      packsList.innerHTML='';PACKS.forEach((p,i)=>{const d=document.createElement('div');
+        d.className='pack';d.innerHTML=`${p.label} — BDT ${p.price}`;
+        d.onclick=()=>{document.querySelectorAll('.pack').forEach(el=>el.classList.remove('selected'));
+          d.classList.add('selected');selected=i;};packsList.appendChild(d);});
+    }
+
+    let selected=null;
+    function confirmOrder(){
+      const uid=document.getElementById('uid').value.trim();
+      if(!uid){alert('UID লিখো');return;}
+      if(selected===null){alert('একটি প্যাক সিলেক্ট করো');return;}
+      packsView.classList.add('hidden');paymentView.classList.remove('hidden');
+      document.getElementById('form_amount').value=PACKS[selected].price;
+    }
+
+    function copyNumber(number){
+      navigator.clipboard.writeText(number);
+      alert(number+' কপি করা হয়েছে!');
+    }
+
+    function showBkash(){
+      const number='01765326575';
+      document.getElementById('paymentInfo').innerHTML=`Bkash Number: <b onclick="copyNumber('${number}')" style="cursor:pointer;color:#27ae60;">${number}</b>`;
+      document.getElementById('payMethod').value='Bkash';
+      document.getElementById('payForm').classList.remove('hidden');
+    }
+
+    function showNagad(){
+      const number='01765326575';
+      document.getElementById('paymentInfo').innerHTML=`Nagad Number: <b onclick="copyNumber('${number}')" style="cursor:pointer;color:#27ae60;">${number}</b>`;
+      document.getElementById('payMethod').value='Nagad';
+      document.getElementById('payForm').classList.remove('hidden');
+    }
+
+    window.addEventListener('load',()=>{
+      const session=JSON.parse(localStorage.getItem('sessionUser')||'null');
+      if(session)openPacks();
+    });
+  </script>
+</body>
+</html>
