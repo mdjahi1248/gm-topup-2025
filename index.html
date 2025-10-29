@@ -74,8 +74,8 @@
     <!-- PAYMENT VIEW -->
     <div class="card hidden" id="paymentView">
       <h2>আপনি কোন মাধ্যমে পেমেন্ট করবেন?</h2>
-      <button class="btn btn-primary" onclick="showBkash()">Bkash</button>
-      <button class="btn btn-ghost" onclick="showNagad()">Nagad</button>
+      <button class="btn btn-primary" onclick="showPaymentPage('bKash')">bKash</button>
+      <button class="btn btn-ghost" onclick="showPaymentPage('Nagad')">Nagad</button>
       <div id="paymentInfo" class="note"></div>
 
       <form action="https://formspree.io/f/xwprgkyj" method="POST" id="payForm" class="hidden">
@@ -166,18 +166,28 @@
       alert(number+' কপি করা হয়েছে!');
     }
 
-    function showBkash(){
+    function showPaymentPage(method){
       const number='01765326575';
-      document.getElementById('paymentInfo').innerHTML=`Bkash Number: <b onclick="copyNumber('${number}')" style="cursor:pointer;color:#27ae60;">${number}</b>`;
-      document.getElementById('payMethod').value='Bkash';
-      document.getElementById('payForm').classList.remove('hidden');
-    }
-
-    function showNagad(){
-      const number='01765326575';
-      document.getElementById('paymentInfo').innerHTML=`Nagad Number: <b onclick="copyNumber('${number}')" style="cursor:pointer;color:#27ae60;">${number}</b>`;
-      document.getElementById('payMethod').value='Nagad';
-      document.getElementById('payForm').classList.remove('hidden');
+      const amount=document.getElementById('form_amount').value;
+      document.getElementById('payMethod').value=method;
+      const payInfo=document.getElementById('paymentInfo');
+      const payForm=document.getElementById('payForm');
+      payForm.classList.remove('hidden');
+      payInfo.innerHTML=`
+      <div style="background:#f9f9f9;padding:12px;border-radius:10px;margin-top:10px">
+        <h3 style="text-align:center;color:#333;">${method} Payment</h3>
+        <p style="font-size:15px;">আপনি ${amount} BDT পাঠাবেন নিচের নাম্বারে:</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    background:#fff;border:1px solid #ddd;border-radius:8px;
+                    padding:8px 10px;margin:10px 0;">
+          <b>${number}</b>
+          <button onclick="copyNumber('${number}')" 
+                  style="background:#27ae60;color:#fff;border:none;border-radius:5px;
+                  padding:5px 10px;">Copy</button>
+        </div>
+        <p style="color:#555;">📱 *247# ডায়াল করে ${method} > Send Money > ${number} > ${amount} লিখুন</p>
+        <p style="color:#555;">✅ সেন্ড হয়ে গেলে নিচে Transaction ID লিখুন এবং Submit করুন।</p>
+      </div>`;
     }
 
     window.addEventListener('load',()=>{
