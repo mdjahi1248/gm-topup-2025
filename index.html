@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GM TOP UP FREE FIRE</title>
+  <title>Free Fire Top Up BDT</title>
   <style>
     :root{--green:#27ae60;--dark:#0b5345;--card:#fff;--muted:#666}
     *{box-sizing:border-box;font-family:Arial, sans-serif}
@@ -80,9 +80,12 @@
 
       <form action="https://formspree.io/f/xwprgkyj" method="POST" id="payForm" class="hidden">
         <input type="hidden" name="method" id="payMethod">
-        <input type="hidden" name="uid" id="form_uid">
+        <label>Free Fire UID:</label>
+        <input type="text" name="uid" id="form_uid" readonly required>
+        <label>Transaction ID:</label>
         <input type="text" name="trxid" placeholder="Transaction ID" required>
-        <input type="text" name="amount" id="form_amount" placeholder="Amount (BDT)" readonly>
+        <label>Amount (BDT):</label>
+        <input type="text" name="amount" id="form_amount" readonly required>
         <button type="submit" class="btn btn-primary">Submit Payment</button>
       </form>
     </div>
